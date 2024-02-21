@@ -5,7 +5,7 @@ import {useAppStore} from "@/store/zustand";
 import {useRef} from "react";
 
 export default function AppForm () {
-  const { isLoading, setIsLoading, setVideoSrc } = useAppStore()
+  const { isLoading, setIsLoading, setVideoSrc, setVideoCreatedAt } = useAppStore()
   const formRef = useRef<HTMLFormElement>(null)
   return (
     <Formik
@@ -15,13 +15,14 @@ export default function AppForm () {
           const formData = new FormData(formRef.current as HTMLFormElement)
           setIsLoading(true)
           try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/merge`, {
+            const response = await fetch(`/api/merge`, {
               method: 'POST',
               body: formData
             })
             const responseJSON = await response.json()
             if (responseJSON.Success === true) {
-              setVideoSrc(`${process.env.NEXT_PUBLIC_API_URL}${responseJSON.VideoSrc}`)
+              setVideoSrc(responseJSON.VideoSrc)
+              setVideoCreatedAt(new Date(responseJSON.VideoCreatedAt))
             }
           } catch (err) {
             console.error(err)
